@@ -51,7 +51,6 @@ $config = [
             'rules' => [
 				//'<action:(about|contact|login|)>' => 'site/<action>',
 				//'<controller>/<action>' => '<controller>/<action>',
-				//'/<short>' => '/index.php',
             ],
         ],
 

@@ -76,7 +76,7 @@ class SiteController extends Controller
 		$counter = new \app\models\Counter();
 
 		// проверка на шорт адрес и защита от инъекции обрезка до 8 символов
-		if ($shot = substr(Yii::$app->request->get('s'),0,8)){
+		if ($shot = substr(Yii::$app->request->get('s')??'',0,8)){
 			try {
 				$url = $model::find()
 					->where(['shot' => $shot])
