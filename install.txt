@@ -1,0 +1,46 @@
+проект полностью готов со всеми зависимостями для Апачи для nginx взять настройки из файла Nginx-1.17_vhost.conf,
+сделал специально короткий юрл на гет параметрах чтоб не настраивать отдельно каждые конфиги для ЧПУ в зависимости от настроек апачи и нджинкс 
+проект клонировать с репозитория, 
+через композер подтянуть все ависимости, 
+в конфиге прописать доступ к бд сервера и установить из дампа следующие таблицы 
+CREATE TABLE `user` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`username` VARCHAR(255) NOT NULL COLLATE 'utf8_unicode_ci',
+	`auth_key` VARCHAR(32) NOT NULL COLLATE 'utf8_unicode_ci',
+	`password_hash` VARCHAR(255) NOT NULL COLLATE 'utf8_unicode_ci',
+	`password_reset_token` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
+	`email` VARCHAR(255) NOT NULL COLLATE 'utf8_unicode_ci',
+	`status` SMALLINT(6) NOT NULL DEFAULT '10',
+	`created_at` INT(11) NOT NULL,
+	`updated_at` INT(11) NOT NULL,
+	`access_token` VARCHAR(50) NOT NULL DEFAULT '123' COLLATE 'utf8_unicode_ci',
+	PRIMARY KEY (`id`) USING BTREE,
+	UNIQUE INDEX `username` (`username`) USING BTREE,
+	UNIQUE INDEX `email` (`email`) USING BTREE,
+	UNIQUE INDEX `password_reset_token` (`password_reset_token`) USING BTREE
+)
+COLLATE='utf8_unicode_ci'
+ENGINE=InnoDB
+;
+CREATE TABLE `url` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`website` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+	`shot` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+	`qr` MEDIUMTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+;
+CREATE TABLE `counter` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`ip` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+	`link` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+	`count` INT(11) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+;
+
+
