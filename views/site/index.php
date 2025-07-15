@@ -1,49 +1,53 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-use yii\widgets\Pjax;
+/** @var yii\web\View $this */
 
-	/** @var yii\web\View $this */
-/** @var app\models\Url $model */
-/** @var ActiveForm $form */
+$this->title = 'My Yii Application';
 ?>
-<div class="index">
+<div class="site-index">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <div class="jumbotron text-center bg-transparent mt-5 mb-5">
+        <h1 class="display-4">Congratulations!</h1>
 
-	<?php echo $form->errorSummary($model); ?>
+        <p class="lead">You have successfully created your Yii-powered application.</p>
 
-        <?= $form->field($model, 'website') ?>
+        <p><a class="btn btn-lg btn-success" href="https://www.yiiframework.com">Get started with Yii</a></p>
+    </div>
 
-        <div class="form-group">
-            <?= Html::submitButton('Submit', ['class' => 'btn btn-primary']) ?>
+    <div class="body-content">
+
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                <h2>Heading</h2>
+
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                    fugiat nulla pariatur.</p>
+
+                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <h2>Heading</h2>
+
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                    fugiat nulla pariatur.</p>
+
+                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
+            </div>
+            <div class="col-lg-4">
+                <h2>Heading</h2>
+
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                    fugiat nulla pariatur.</p>
+
+                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
+            </div>
         </div>
-		<div class="qr"></div>
-		<div class="shot"></div>
-    <?php ActiveForm::end();
-		$js = <<<JS
-		$('form').on('beforeSubmit', function(){
-		var data = $(this).serialize();
-		$.ajax({
-			url: '/',
-			type: 'POST',
-			data: data,
-			success: function(res){
-				if (res['error']) return alert(res['error']);				
-			console.log(res);
-			$('.qr').html(res['qr']);
-			$('.shot').html('<br><a href="'+res['shot']+'">'+res['shot']+'</p>');
-			},
-			error: function(){
-			alert('Error!');
-			}
-			});
-			return false;
-		});
-		JS;
-	$this->registerJs($js);
-	?>
 
-
-</div><!-- index -->
+    </div>
+</div>

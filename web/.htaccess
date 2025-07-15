@@ -1,4 +1,12 @@
 RewriteEngine on
-RewriteCond %{REQUEST_FILENAME} !-d
+# Если файл или папка реально существуют, не переписывать URL
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule . index.php [L]
+RewriteCond %{REQUEST_FILENAME} !-d
+# Всё остальное отправлять на index.php
+RewriteRule . index.php
+
+# Запретить доступ к скрытым файлам и папкам (начинающимся с .)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
