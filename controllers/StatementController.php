@@ -31,6 +31,7 @@ class StatementController extends Controller
         $errors = [];
         $balances = [];
         $profitCol = null;
+        $typeCol = null;
         $dom = new \DOMDocument();
         @$dom->loadHTML($html);
         $tables = $dom->getElementsByTagName('table');
@@ -44,30 +45,84 @@ class StatementController extends Controller
             $errors[] = 'В таблице нет строк.';
             return [[], $errors];
         }
-        // Найти столбец profit
+        // Найти столбцы profit и type
         foreach ($rows as $i => $row) {
             $cells = $row->getElementsByTagName('td');
             if ($cells->length == 0) {
                 $cells = $row->getElementsByTagName('th');
             }
             foreach ($cells as $j => $cell) {
-                if (mb_strtolower(trim($cell->textContent)) == 'profit') {
+                $text = mb_strtolower(trim($cell->textContent));
+                if ($text == 'profit') {
                     $profitCol = $j;
-                    break 2;
                 }
+                if ($text == 'type') {
+                    $typeCol = $j;
+                }
+            }
+            if ($profitCol !== null && $typeCol !== null) {
+                break;
             }
         }
         if ($profitCol === null) {
             $errors[] = 'Не найден столбец profit.';
             return [[], $errors];
         }
-        // Считать баланс
-        $balance = 0;
+        // Найти стартовый баланс
+        $startBalance = null;
+        foreach ($rows as $i => $row) {
+            $cells = $row->getElementsByTagName('td');
+            if ($cells->length > 0) {
+                $type = $typeCol !== null && $cells->length > $typeCol ? mb_strtolower(trim($cells->item($typeCol)->textContent)) : null;
+                if ($type === 'balance') {
+                    // Ищем последнее числовое значение в строке
+                    $lastNumeric = null;
+                    foreach ($cells as $cell) {
+                        $val = str_replace([',', ' '], ['.', ''], trim($cell->textContent));
+                        if (is_numeric($val)) {
+                            $lastNumeric = (float)$val;
+                        }
+                    }
+                    if ($lastNumeric !== null) {
+                        $startBalance = $lastNumeric;
+                        break;
+                    }
+                }
+            }
+        }
+        // Если не нашли строку balance, ищем первую строку с числовым profit
+        if ($startBalance === null) {
+            foreach ($rows as $i => $row) {
+                $cells = $row->getElementsByTagName('td');
+                if ($cells->length > $profitCol) {
+                    $profitRaw = trim($cells->item($profitCol)->textContent);
+                    $profit = str_replace([',', ' '], ['.', ''], $profitRaw);
+                    if (is_numeric($profit)) {
+                        $startBalance = (float)$profit;
+                        break;
+                    }
+                }
+            }
+        }
+        if ($startBalance === null) {
+            $errors[] = 'Не найден стартовый баланс.';
+            return [[], $errors];
+        }
+        $balance = $startBalance;
+        $balances[] = $balance;
+        $first = true;
         foreach ($rows as $i => $row) {
             $cells = $row->getElementsByTagName('td');
             if ($cells->length > $profitCol) {
-                $profit = str_replace(',', '.', trim($cells->item($profitCol)->textContent));
+                $type = $typeCol !== null && $cells->length > $typeCol ? mb_strtolower(trim($cells->item($typeCol)->textContent)) : null;
+                $profitRaw = trim($cells->item($profitCol)->textContent);
+                $profit = str_replace([',', ' '], ['.', ''], $profitRaw);
                 if (is_numeric($profit)) {
+                    // Пропустить первую строку, если это стартовый баланс
+                    if ($first && $type === 'balance' && (float)$profit === $startBalance) {
+                        $first = false;
+                        continue;
+                    }
                     $balance += (float)$profit;
                     if ($balance < 0) $balance = 0;
                     $balances[] = $balance;
