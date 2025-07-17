@@ -113,19 +113,35 @@ class StatementController extends Controller
         $first = true;
         foreach ($rows as $i => $row) {
             $cells = $row->getElementsByTagName('td');
-            if ($cells->length > $profitCol) {
+            if ($cells->length > 0) {
                 $type = $typeCol !== null && $cells->length > $typeCol ? mb_strtolower(trim($cells->item($typeCol)->textContent)) : null;
-                $profitRaw = trim($cells->item($profitCol)->textContent);
-                $profit = str_replace([',', ' '], ['.', ''], $profitRaw);
-                if (is_numeric($profit)) {
-                    // Пропустить первую строку, если это стартовый баланс
-                    if ($first && $type === 'balance' && (float)$profit === $startBalance) {
-                        $first = false;
-                        continue;
+                if ($type === 'balance') {
+                    // Для строк balance ищем последнее числовое значение
+                    $lastNumeric = null;
+                    foreach ($cells as $cell) {
+                        $val = str_replace([',', ' '], ['.', ''], trim($cell->textContent));
+                        if (is_numeric($val)) {
+                            $lastNumeric = (float)$val;
+                        }
                     }
-                    $balance += (float)$profit;
-                    if ($balance < 0) $balance = 0;
-                    $balances[] = $balance;
+                    if ($lastNumeric !== null) {
+                        if ($first && $lastNumeric === $startBalance) {
+                            $first = false;
+                            continue;
+                        }
+                        $balance += $lastNumeric;
+                        if ($balance < 0) $balance = 0;
+                        $balances[] = $balance;
+                    }
+                } elseif ($cells->length > $profitCol) {
+                    // Обычная логика для остальных строк
+                    $profitRaw = trim($cells->item($profitCol)->textContent);
+                    $profit = str_replace([',', ' '], ['.', ''], $profitRaw);
+                    if (is_numeric($profit)) {
+                        $balance += (float)$profit;
+                        if ($balance < 0) $balance = 0;
+                        $balances[] = $balance;
+                    }
                 }
             }
         }
